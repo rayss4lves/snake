@@ -16,18 +16,17 @@ void moverCobra(Posicao cobra[], int comprimento, char direcao);
 
 int verificarColisao(Posicao cobra[], int comprimento);
 
-int comeu(Posicao cobra[],int x,int y);
+int comeu(Posicao cobra[], int x, int y);
 
 int main()
 {
-    int placar = 0;
 
     int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO];
-    int i,j,x,y;
+    int i, j, x, y;
 
-    for (i=0;i<TAM_TABULEIRO;i++)
+    for (i = 0; i < TAM_TABULEIRO; i++)
     {
-        for (j=0;j<TAM_TABULEIRO;j++)
+        for (j = 0; j < TAM_TABULEIRO; j++)
             tabuleiro[i][j] = 0;
     }
 
@@ -42,14 +41,29 @@ int main()
 
     while (direcao != 'x')
     {
-        if(comida == 0)
+        // tentando criar a comida no tabuleiro
+        while (comida == 0)
         {
             srand(time(NULL));
             x = rand() % TAM_TABULEIRO;
             y = rand() % TAM_TABULEIRO;
+
+            // checando se a comida vai ser criada em algum lugar fora da zona ocupada pelo corpo da cobra
+            i = 0;
+            while (i < comprimentoCobra)
+            {
+                // se a comida for criada emcima de alguma parte da cobra, geramos uma nova posição para a comida e checamos toda a cobra novamente para garantir que a comida aparece em outro lugar que não seja em cima da cobra
+                if (cobra[i].x == x && cobra[i].y == y)
+                {
+                    //-1 que somando com ++ vai para zero
+                    i = -1;
+                    x = rand() % TAM_TABULEIRO;
+                    y = rand() % TAM_TABULEIRO;
+                }
+                i++;
+            }
             comida = 1;
         }
-        
 
         tabuleiro[x][y] = 1;
         imprimir_tabuleiro(tabuleiro, cobra, comprimentoCobra);
@@ -60,21 +74,19 @@ int main()
 
         moverCobra(cobra, comprimentoCobra, direcao);
 
-        if (comeu(cobra,x,y))
+        if (comeu(cobra, x, y))
         {
             printf("\nFaze concluida com sucesso!\n");
-            comprimentoCobra ++;
+            comprimentoCobra++;
             comida = 0;
             tabuleiro[x][y] = 0;
-            printf("\nResultado - %d", placar);
         }
 
         if (verificarColisao(cobra, comprimentoCobra))
         {
             printf("\nGame Over - Cobra Colidiu\n");
             direcao = 'x';
-        } 
-            
+        }
     }
     return 0;
 }
@@ -129,32 +141,34 @@ void moverCobra(Posicao cobra[], int comprimento, char direcao)
 {
     int i;
 
-    if (direcao != 'w' && direcao != 's' && direcao != 'a' && direcao != 'd') {
-        printf("Opcao invalida\n");
-        return;
-    }
-
-    for (i = comprimento - 1; i > 0; i--)
-        cobra[i] = cobra[i - 1];
-
-    switch (direcao)
+    if (direcao != 'w' && direcao != 's' && direcao != 'a' && direcao != 'd')
     {
-    case 'w':
-        cobra[0].x--;
-        break;
-    case 's':
-        cobra[0].x++;
-        break;
-    case 'a':
-        cobra[0].y--;
-        break;
-    case 'd':
-        cobra[0].y++;
-        break;
-    default:
-        printf("opcao invalida\n");
-        break;
+        printf("Opcao invalida\n");
     }
+    else
+    {
+        for (i = comprimento - 1; i > 0; i--)
+            cobra[i] = cobra[i - 1];
+
+        switch (direcao)
+        {
+            case 'w':
+                cobra[0].x--;
+                break;
+            case 's':
+                cobra[0].x++;
+                break;
+            case 'a':
+                cobra[0].y--;
+                break;
+            case 'd':
+                cobra[0].y++;
+                break;
+            default:
+                printf("opcao invalida\n");
+                break;
+            }
+        }
 }
 
 int verificarColisao(Posicao cobra[], int comprimento)
@@ -173,7 +187,7 @@ int verificarColisao(Posicao cobra[], int comprimento)
     return colidiu;
 }
 
-int comeu(Posicao cobra[],int x,int y)
+int comeu(Posicao cobra[], int x, int y)
 {
     int resultado = 0;
     if (cobra[0].x == x && cobra[0].y == y)
