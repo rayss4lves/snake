@@ -129,6 +129,11 @@ void moverCobra(Posicao cobra[], int comprimento, char direcao)
 {
     int i;
 
+    if (direcao != 'w' && direcao != 's' && direcao != 'a' && direcao != 'd') {
+        printf("Opcao invalida\n");
+        return;
+    }
+
     for (i = comprimento - 1; i > 0; i--)
         cobra[i] = cobra[i - 1];
 
@@ -146,8 +151,8 @@ void moverCobra(Posicao cobra[], int comprimento, char direcao)
     case 'd':
         cobra[0].y++;
         break;
-
     default:
+        printf("opcao invalida\n");
         break;
     }
 }
